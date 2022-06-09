@@ -6,5 +6,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 common.register_handlers(dp)
+registration.register_handlers(dp)
 
 executor.start_polling(dp)
