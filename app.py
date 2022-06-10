@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from aiogram.utils import executor
 from start_bot import dp
 from handlers import common, registration
