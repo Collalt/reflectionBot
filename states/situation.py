@@ -7,9 +7,13 @@ class Goal(StatesGroup):
     waiting_for_confirm = State()
     waiting_for_preferences = State()
 
+
 class MainMenu(StatesGroup):
     main = State()
     settings = State()
+    change_goal_settings = State()
+    change_goal = State()
+    change_term = State()
     help = State()
 
 class Task(StatesGroup):
