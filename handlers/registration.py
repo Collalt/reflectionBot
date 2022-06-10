@@ -7,14 +7,11 @@ from keyboards.settings_keyboard import settings_kb
 from keyboards.change_goal_keyboard import change_goal_kb
 from keyboards.mainmenu_keyboard import mainMenu_kb
 from keyboards.goal_confirm_keyboard import confirm_goal_kb
-from keyboards.change_term_keyboard import change_term_kb
 from model import model
 
 
 async def create_goal_button(message: types.message):
     user_id = message.from_user.id
-    # if model.customers.find_one({"user_id": user_id}):
-    #     return
     model.customers.insert_one({"user_id": user_id})
     await message.answer(dialogue['registration']['goal'], reply_markup=types.ReplyKeyboardRemove())
     await Goal.waiting_for_goal.set()

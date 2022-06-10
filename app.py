@@ -4,7 +4,6 @@ load_dotenv()
 from aiogram.utils import executor
 from start_bot import dp
 from handlers import common, registration
-from model import model
 import logging
 
 
