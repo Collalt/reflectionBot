@@ -2,7 +2,7 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 button1 = KeyboardButton('Изменить цель')
 button2 = KeyboardButton('Изменить срок')
-button3 = KeyboardButton('Настройка')
+button3 = KeyboardButton('Продолжить')
 
 confirm_goal_kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 
