@@ -7,6 +7,7 @@ from handlers import common, registration
 from model import model
 import logging
 
+
 logging.basicConfig(level=logging.INFO)
 
 common.register_handlers(dp)
