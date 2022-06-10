@@ -3,7 +3,7 @@ from start_bot import bot, dp, dialogue
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from states.situation import Goal
-from keyboards.settings_keyboard import settings_kb
+from keyboards.initial_settings_keyboard import initial_settings_kb
 from keyboards.change_goal_keyboard import change_goal_kb
 from keyboards.mainmenu_keyboard import mainMenu_kb
 from keyboards.goal_confirm_keyboard import confirm_goal_kb
@@ -46,7 +46,7 @@ async def set_up_term(message: types.message, state: FSMContext):
 
 
 async def goal_confirm(message: types.message, state: FSMContext):
-    await message.answer(dialogue['registration']['preferences'], reply_markup=settings_kb)
+    await message.answer(dialogue['registration']['preferences'], reply_markup=initial_settings_kb)
     await Goal.next()
 
 

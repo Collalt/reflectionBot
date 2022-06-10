@@ -1,1 +1,1 @@
-from handlers import registration, common
+from handlers import registration, common, mainmenu
