@@ -1,1 +1,4 @@
-from keyboards import mainmenu_keyboard, settings_keyboard
+from keyboards import mainmenu_keyboard
+from keyboards import settings_keyboard
+from keyboards import start_keyboard
+from keyboards import change_goal_keyboard

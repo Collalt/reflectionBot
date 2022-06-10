@@ -1,8 +1,8 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-button1 = KeyboardButton('Task')
-button2 = KeyboardButton('Help')
-button3 = KeyboardButton('Settings')
+button1 = KeyboardButton('Задачи')
+button2 = KeyboardButton('Помощь')
+button3 = KeyboardButton('Настройки')
 
 mainMenu_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 
