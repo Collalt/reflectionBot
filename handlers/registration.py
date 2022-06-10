@@ -2,7 +2,7 @@ from aiogram import types, Dispatcher
 from start_bot import bot, dp
 from aiogram.dispatcher import FSMContext
 from states.situation import Goal
-from keyboards import settings_keyboard
+from keyboards.settings_keyboard import settings_kb
 
 
 async def set_up_goal(message: types.message, state: FSMContext):
@@ -13,7 +13,7 @@ async def set_up_goal(message: types.message, state: FSMContext):
 
 async def set_up_term(message: types.message, state: FSMContext):
     # TODO edit goal, term before continue
-    await message.answer('Nice, configure preferences before we continue', reply_markup=settings_keyboard)
+    await message.answer('Nice, configure preferences before we continue', reply_markup=settings_kb)
     await Goal.next()
 
 
