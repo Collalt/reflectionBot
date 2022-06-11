@@ -6,12 +6,14 @@ from keyboards.mainmenu_settings_keyboard import mainSettings_kb
 from keyboards.mainmenu_keyboard import mainMenu_kb
 from keyboards.setting_change_goal_keyboard import change_goal_kb
 from keyboards.back_keyboard import back_kb
-from states.situation import MainMenu
+from keyboards.tasks_keyboard import tasks_kb
+from states.situation import MainMenu, Tasks
 from model import model
 
 
 # TODO use dictionaries instead of if or match case, also make code more readible
 # TODO goal = target, term
+# TODO move change goal to separate handlers
 
 # Return to main menu from any state
 async def return_to_menu(message: types.Message, state: FSMContext):
@@ -26,7 +28,8 @@ async def main_menu(message: types.Message, state: FSMContext):
     if message.text == 'Помощь':
         await message.answer("Помощь")
     if message.text == 'Задачи':
-        await message.answer("Задачи")
+        await message.answer(dialogue['tasks']['main'], reply_markup=tasks_kb)
+        await Tasks.main.set()
 
 
 async def main_settings(message: types.Message, state: FSMContext):

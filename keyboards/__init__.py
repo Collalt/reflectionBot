@@ -4,3 +4,4 @@ from keyboards import start_keyboard
 from keyboards import change_goal_keyboard
 from keyboards import back_keyboard
 from keyboards import setting_change_goal_keyboard
+from keyboards import  tasks_keyboard
