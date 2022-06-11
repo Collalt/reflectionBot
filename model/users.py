@@ -37,7 +37,7 @@ def add_user(user_id):
     return users.find_one({"_id": user_id})
 
 
-def edit_user(user_id, goal=None, tasks_list=None):
+def edit_user(user_id, goal=None, tasks_list=None, completed_tasks=None):
     if user_id is None:
         raise ValueError("user_id is not provided")
 
@@ -47,6 +47,7 @@ def edit_user(user_id, goal=None, tasks_list=None):
         new_data = copy.deepcopy(User)
         new_data["goal"] = goal or user["goal"]
         new_data["tasks_list"] = tasks_list or user["tasks_list"]
+        new_data["completed_tasks"] = completed_tasks or user["completed_tasks"]
 
         users.update_one({"_id": user_id}, {"$set": new_data})
         return users.find_one({"_id": user_id})
@@ -69,6 +70,7 @@ def edit_user_goal(user_id, goal_text=None, goal_term=None):
     else:
         raise ValueError("User with provided id not found")
 
+
 def add_task_user(user_id, task_id):
     if user_id is None:
         raise ValueError("user_id is not provided")
@@ -76,9 +78,24 @@ def add_task_user(user_id, task_id):
     user = users.find_one({"_id": user_id})
 
     if user is not None:
-        new_task_list = user["tasks_list"].copy()
-        new_task_list.append(task_id)
+        new_tasks_list = user["tasks_list"].copy()
+        new_tasks_list.append(task_id)
 
-        return edit_user(user_id, tasks_list=new_task_list)
+        return edit_user(user_id, tasks_list=new_tasks_list)
+    else:
+        raise ValueError("User with provided id not found")
+
+
+def add_completed_task_user(user_id, task_id):
+    if user_id is None:
+        raise ValueError("user_id is not provided")
+
+    user = users.find_one({"_id": user_id})
+
+    if user is not None:
+        new_tasks_list = user["completed_tasks"].copy()
+        new_tasks_list.append({"_id": task_id, "completion_time": datetime.now()})
+
+        return edit_user(user_id, completed_tasks=new_tasks_list)
     else:
         raise ValueError("User with provided id not found")
