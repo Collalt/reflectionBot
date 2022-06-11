@@ -7,7 +7,7 @@ from keyboards.goals_keyboard import change_goal_kb
 from keyboards.back_keyboard import back_kb
 from keyboards.tasks_keyboard import tasks_kb
 from states.situation import MainMenu, Tasks
-from model import model
+from model import users
 
 
 # TODO use dictionaries instead of if or match case, also make code more readible
@@ -36,9 +36,12 @@ async def main_menu(message: types.Message, state: FSMContext):
 async def main_settings(message: types.Message, state: FSMContext):
     if message.text == "Изменить цель":
         user_id = message.from_user.id
-        target = model.customers.find_one({"user_id": user_id})["goal"]
-        term = model.customers.find_one({"user_id": user_id})["term"]
-        await message.answer(dialogue['registration']['confirm'].format(target, term), reply_markup=change_goal_kb)
+
+        user = users.get_user(user_id)
+
+        goal_text = user["goal"]["text"]
+        goal_term = user["goal"]["term"]
+        await message.answer(dialogue['registration']['confirm'].format(goal_text, goal_term), reply_markup=change_goal_kb)
         await MainMenu.change_goal_settings.set()
     if message.text == "Частота сессий":
         await message.answer("Частота сессий")
@@ -51,13 +54,19 @@ async def main_settings(message: types.Message, state: FSMContext):
 async def change_goal_setting(message: types.Message, state: FSMContext):
     if message.text == "Изменить цель":
         user_id = message.from_user.id
-        target = model.customers.find_one({"user_id": user_id})["goal"]
-        await message.answer(dialogue['mainmenu']['ask_change_goal'].format(target), reply_markup=back_kb)
+
+        user = users.get_user(user_id)
+
+        goal_text = user["goal"]["text"]
+        await message.answer(dialogue['mainmenu']['ask_change_goal'].format(goal_text), reply_markup=back_kb)
         await MainMenu.change_target.set()
     if message.text == "Изменить срок":
         user_id = message.from_user.id
-        term = model.customers.find_one({"user_id": user_id})["term"]
-        await message.answer(dialogue['mainmenu']['ask_change_term'].format(term), reply_markup=back_kb)
+
+        user = users.get_user(user_id)
+
+        goal_term = user["goal"]["term"]
+        await message.answer(dialogue['mainmenu']['ask_change_term'].format(goal_term), reply_markup=back_kb)
         await MainMenu.change_term.set()
     if message.text == "Назад":
         await message.answer(dialogue['mainmenu']['settings'], reply_markup=mainSettings_kb)
@@ -68,18 +77,25 @@ async def change_goal_setting(message: types.Message, state: FSMContext):
 async def change_target_ask(message: types.message, state: FSMContext):
     if message.text == "Назад":
         user_id = message.from_user.id
-        target = model.customers.find_one({"user_id": user_id})["goal"]
-        term = model.customers.find_one({"user_id": user_id})["term"]
-        await message.answer(dialogue['registration']['confirm'].format(target, term), reply_markup=change_goal_kb)
+
+        user = users.get_user(user_id)
+
+        goal_text = user["goal"]["text"]
+        goal_term = user["goal"]["term"]
+
+        await message.answer(dialogue['registration']['confirm'].format(goal_text, goal_term), reply_markup=change_goal_kb)
         await MainMenu.change_goal_settings.set()
         return
 
     user_id = message.from_user.id
     text = message.text
-    model.customers.update_one({"user_id": user_id}, {"$set": {"goal": text}})
-    target = model.customers.find_one({"user_id": user_id})["goal"]
-    term = model.customers.find_one({"user_id": user_id})["term"]
-    await message.answer(dialogue['registration']['confirm'].format(target, term), reply_markup=change_goal_kb)
+
+    user = users.edit_user_goal(user_id, goal_text = text)
+
+    goal_text = user["goal"]["text"]
+    goal_term = user["goal"]["term"]
+
+    await message.answer(dialogue['registration']['confirm'].format(goal_text, goal_term), reply_markup=change_goal_kb)
     await MainMenu.change_goal_settings.set()
 
 
@@ -87,17 +103,24 @@ async def change_target_ask(message: types.message, state: FSMContext):
 async def change_term_ask(message: types.message, state: FSMContext):
     if message.text == "Назад":
         user_id = message.from_user.id
-        target = model.customers.find_one({"user_id": user_id})["goal"]
-        term = model.customers.find_one({"user_id": user_id})["term"]
-        await message.answer(dialogue['registration']['confirm'].format(target, term), reply_markup=change_goal_kb)
+
+        user = users.get_user(user_id)
+
+        goal_text = user["goal"]["text"]
+        goal_term = user["goal"]["term"]
+
+        await message.answer(dialogue['registration']['confirm'].format(goal_text, goal_term), reply_markup=change_goal_kb)
         await MainMenu.change_goal_settings.set()
         return
 
     user_id = message.from_user.id
     text = message.text
-    model.customers.update_one({"user_id": user_id}, {"$set": {"term": text}})
-    target = model.customers.find_one({"user_id": user_id})["goal"]
-    term = model.customers.find_one({"user_id": user_id})["term"]
+
+    user = users.edit_user_goal(user_id, goal_term = text)
+
+    goal_text = user["goal"]["text"]
+    goal_term = user["goal"]["term"]
+    
     await message.answer(dialogue['registration']['confirm'].format(target, term), reply_markup=change_goal_kb)
     await MainMenu.change_goal_settings.set()
 
