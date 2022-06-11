@@ -5,14 +5,15 @@ from aiogram.dispatcher.filters import Text
 from states.situation import Goal, MainMenu
 from keyboards.mainmenu_keyboard import mainMenu_kb
 from keyboards.registration_keyboard import reg_confirm_kb, reg_change_goal_kb, reg_session_settings_kb
-from model import model
+from model import users
 
 # TODO refactor as mainmenu
 
 
 async def registration_choose_goal(message: types.message):
     user_id = message.from_user.id
-    model.customers.insert_one({"user_id": user_id})
+    if ((users.get_user(user_id)) is None):
+        users.add_user(user_id)
     if message.text == 'Создать цель':
         await message.answer(dialogue['registration']['goal'], reply_markup=types.ReplyKeyboardRemove())
         await Goal.waiting_for_goal.set()
@@ -33,7 +34,7 @@ async def change_term(message: types.message, state: FSMContext):
 async def goal_chosen(message: types.message, state: FSMContext):
     text = message.text
     user_id = message.from_user.id
-    model.customers.update_one({"user_id": user_id}, {"$set": {"goal": text}})
+    users.edit_user_goal(user_id, goal_text=text)
     await message.answer(dialogue['registration']['term'], reply_markup=reg_change_goal_kb)
     await Goal.next()
 
@@ -41,9 +42,12 @@ async def goal_chosen(message: types.message, state: FSMContext):
 async def term_chosen(message: types.message, state: FSMContext):
     text = message.text
     user_id = message.from_user.id
-    model.customers.update_one({"user_id": user_id}, {"$set": {"term": text}})
-    goal = model.customers.find_one({"user_id": user_id})["goal"]
-    term = model.customers.find_one({"user_id": user_id})["term"]
+    
+    user = users.edit_user_goal(user_id, goal_term=text)
+
+    goal = user["goal"]["text"]
+    term = user["goal"]["term"]
+
     await message.answer(dialogue['registration']['confirm'].format(goal, term), reply_markup=reg_confirm_kb)
     await Goal.next()
 
