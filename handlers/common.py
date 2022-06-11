@@ -1,15 +1,14 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import State
 from start_bot import bot, dp, dialogue
-from keyboards.start_keyboard import start_kb
+from keyboards.registration_keyboard import reg_start_kb
 
 
 async def start_command_handler(message: types.message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is not None:
         await state.finish()
-    await message.answer(dialogue['common']['start'], reply_markup=start_kb)
+    await message.answer(dialogue['common']['start'], reply_markup=reg_start_kb)
 
 
 async def help_command_handler(message: types.message):

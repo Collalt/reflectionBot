@@ -1,26 +1,28 @@
 from aiogram import types, Dispatcher
-from start_bot import bot, dp, dialogue
+from start_bot import dialogue
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from states.situation import Goal, MainMenu
-from keyboards.initial_settings_keyboard import initial_settings_kb
-from keyboards.change_goal_keyboard import change_goal_kb
 from keyboards.mainmenu_keyboard import mainMenu_kb
-from keyboards.goal_confirm_keyboard import confirm_goal_kb
+from keyboards.registration_keyboard import reg_confirm_kb, reg_change_goal_kb, reg_session_settings_kb
 from model import model
 
+# TODO refactor as mainmenu
 
-async def choose_goal(message: types.message):
+
+async def registration_choose_goal(message: types.message):
     user_id = message.from_user.id
     model.customers.insert_one({"user_id": user_id})
-    await message.answer(dialogue['registration']['goal'], reply_markup=types.ReplyKeyboardRemove())
-    await Goal.waiting_for_goal.set()
+    if message.text == 'Создать цель':
+        await message.answer(dialogue['registration']['goal'], reply_markup=types.ReplyKeyboardRemove())
+        await Goal.waiting_for_goal.set()
 
 
 async def change_goal(message: types.message, state: FSMContext):
     await message.answer(dialogue['registration']['goal'], reply_markup=types.ReplyKeyboardRemove())
     await Goal.waiting_for_goal.set()
     # TODO make separate menu for changing
+
 
 async def change_term(message: types.message, state: FSMContext):
     await message.answer(dialogue['registration']['term'], reply_markup=types.ReplyKeyboardRemove())
@@ -32,7 +34,7 @@ async def goal_chosen(message: types.message, state: FSMContext):
     text = message.text
     user_id = message.from_user.id
     model.customers.update_one({"user_id": user_id}, {"$set": {"goal": text}})
-    await message.answer(dialogue['registration']['term'], reply_markup=change_goal_kb)
+    await message.answer(dialogue['registration']['term'], reply_markup=reg_change_goal_kb)
     await Goal.next()
 
 
@@ -42,12 +44,12 @@ async def term_chosen(message: types.message, state: FSMContext):
     model.customers.update_one({"user_id": user_id}, {"$set": {"term": text}})
     goal = model.customers.find_one({"user_id": user_id})["goal"]
     term = model.customers.find_one({"user_id": user_id})["term"]
-    await message.answer(dialogue['registration']['confirm'].format(goal, term), reply_markup=confirm_goal_kb)
+    await message.answer(dialogue['registration']['confirm'].format(goal, term), reply_markup=reg_confirm_kb)
     await Goal.next()
 
 
 async def goal_confirm(message: types.message, state: FSMContext):
-    await message.answer(dialogue['registration']['preferences'], reply_markup=initial_settings_kb)
+    await message.answer(dialogue['registration']['preferences'], reply_markup=reg_session_settings_kb)
     await Goal.next()
 
 
@@ -58,7 +60,7 @@ async def set_up_preferences(message: types.message, state: FSMContext):
 
 
 def register_handlers(dp: Dispatcher):
-    dp.register_message_handler(choose_goal, Text(equals='Создать цель'))
+    dp.register_message_handler(registration_choose_goal, Text(equals='Создать цель'))
     dp.register_message_handler(change_goal, Text(equals='Изменить цель'), state=(Goal.waiting_for_term, Goal.waiting_for_confirm))
     dp.register_message_handler(change_term, Text(equals='Изменить срок'), state=Goal.waiting_for_confirm)
     dp.register_message_handler(goal_chosen, state=Goal.waiting_for_goal)

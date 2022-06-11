@@ -1,11 +1,7 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 from start_bot import dp, dialogue
-from keyboards.mainmenu_settings_keyboard import mainSettings_kb
 from keyboards.mainmenu_keyboard import mainMenu_kb
-from keyboards.setting_change_goal_keyboard import change_goal_kb
-from keyboards.back_keyboard import back_kb
 from states.situation import MainMenu, Tasks
 from model import model
 
