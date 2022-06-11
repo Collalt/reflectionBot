@@ -17,8 +17,10 @@ class MainMenu(StatesGroup):
     help = State()
 
 
-class Task(StatesGroup):
-    waiting_for_task = State()
+class Tasks(StatesGroup):
+    main = State()
+    add = State()
+    delete = State()
 
 # class DayReflection(StatesGroup):
 
