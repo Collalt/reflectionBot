@@ -37,7 +37,7 @@ def add_user(user_id):
     return users.find_one({"_id": user_id})
 
 
-def edit_user(user_id, goal=None, tasks_list=None, completed_tasks=None):
+def edit_user(user_id, goal=None, tasks_list=None, completed_tasks=None, time_zone = None):
     if user_id is None:
         raise ValueError("user_id is not provided")
 
@@ -48,6 +48,7 @@ def edit_user(user_id, goal=None, tasks_list=None, completed_tasks=None):
         new_data["goal"] = goal or user["goal"]
         new_data["tasks_list"] = tasks_list or user["tasks_list"]
         new_data["completed_tasks"] = completed_tasks or user["completed_tasks"]
+        new_data["time_zone"] = time_zone or user["time_zone"]
 
         users.update_one({"_id": user_id}, {"$set": new_data})
         return users.find_one({"_id": user_id})
