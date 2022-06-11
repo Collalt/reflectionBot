@@ -2,9 +2,8 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from start_bot import dp, dialogue
-from keyboards.mainmenu_settings_keyboard import mainSettings_kb
-from keyboards.mainmenu_keyboard import mainMenu_kb
-from keyboards.setting_change_goal_keyboard import change_goal_kb
+from keyboards.mainmenu_keyboard import mainMenu_kb, mainSettings_kb
+from keyboards.goals_keyboard import change_goal_kb
 from keyboards.back_keyboard import back_kb
 from keyboards.tasks_keyboard import tasks_kb
 from states.situation import MainMenu, Tasks
@@ -21,6 +20,7 @@ async def return_to_menu(message: types.Message, state: FSMContext):
     await MainMenu.main.set()
 
 
+# Main menu
 async def main_menu(message: types.Message, state: FSMContext):
     if message.text == 'Настройки':
         await message.answer(dialogue['mainmenu']['settings'], reply_markup=mainSettings_kb)
@@ -32,6 +32,7 @@ async def main_menu(message: types.Message, state: FSMContext):
         await Tasks.main.set()
 
 
+# Main menu settings
 async def main_settings(message: types.Message, state: FSMContext):
     if message.text == "Изменить цель":
         user_id = message.from_user.id
@@ -46,6 +47,7 @@ async def main_settings(message: types.Message, state: FSMContext):
         await MainMenu.main.set()
 
 
+# Select change target or term
 async def change_goal_setting(message: types.Message, state: FSMContext):
     if message.text == "Изменить цель":
         user_id = message.from_user.id
@@ -62,7 +64,8 @@ async def change_goal_setting(message: types.Message, state: FSMContext):
         await MainMenu.settings.set()
 
 
-async def change_goal_ask(message: types.message, state: FSMContext):
+# Change target
+async def change_target_ask(message: types.message, state: FSMContext):
     if message.text == "Назад":
         user_id = message.from_user.id
         target = model.customers.find_one({"user_id": user_id})["goal"]
@@ -80,12 +83,13 @@ async def change_goal_ask(message: types.message, state: FSMContext):
     await MainMenu.change_goal_settings.set()
 
 
+# Change term
 async def change_term_ask(message: types.message, state: FSMContext):
     if message.text == "Назад":
         user_id = message.from_user.id
-        goal = model.customers.find_one({"user_id": user_id})["goal"]
+        target = model.customers.find_one({"user_id": user_id})["goal"]
         term = model.customers.find_one({"user_id": user_id})["term"]
-        await message.answer(dialogue['registration']['confirm'].format(goal, term), reply_markup=change_goal_kb)
+        await message.answer(dialogue['registration']['confirm'].format(target, term), reply_markup=change_goal_kb)
         await MainMenu.change_goal_settings.set()
         return
 
@@ -101,7 +105,7 @@ async def change_term_ask(message: types.message, state: FSMContext):
 def register_handlers(dp: Dispatcher):
     dp.register_message_handler(return_to_menu, Text(equals="Главное меню"), state='*')
     dp.register_message_handler(change_term_ask, state=MainMenu.change_term)
-    dp.register_message_handler(change_goal_ask, state=MainMenu.change_target)
+    dp.register_message_handler(change_target_ask, state=MainMenu.change_target)
     dp.register_message_handler(change_goal_setting, state=MainMenu.change_goal_settings)
     dp.register_message_handler(main_settings, state=MainMenu.settings)
     dp.register_message_handler(main_menu, state='*')
