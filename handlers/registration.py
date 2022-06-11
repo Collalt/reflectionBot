@@ -2,7 +2,7 @@ from aiogram import types, Dispatcher
 from start_bot import bot, dp, dialogue
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
-from states.situation import Goal
+from states.situation import Goal, MainMenu
 from keyboards.initial_settings_keyboard import initial_settings_kb
 from keyboards.change_goal_keyboard import change_goal_kb
 from keyboards.mainmenu_keyboard import mainMenu_kb
@@ -10,7 +10,7 @@ from keyboards.goal_confirm_keyboard import confirm_goal_kb
 from model import model
 
 
-async def create_goal_button(message: types.message):
+async def choose_goal(message: types.message):
     user_id = message.from_user.id
     model.customers.insert_one({"user_id": user_id})
     await message.answer(dialogue['registration']['goal'], reply_markup=types.ReplyKeyboardRemove())
@@ -20,14 +20,15 @@ async def create_goal_button(message: types.message):
 async def change_goal(message: types.message, state: FSMContext):
     await message.answer(dialogue['registration']['goal'], reply_markup=types.ReplyKeyboardRemove())
     await Goal.waiting_for_goal.set()
-
+    # TODO make separate menu for changing
 
 async def change_term(message: types.message, state: FSMContext):
     await message.answer(dialogue['registration']['term'], reply_markup=types.ReplyKeyboardRemove())
     await Goal.waiting_for_term.set()
+    # TODO make separate menu for changing
 
 
-async def set_up_goal(message: types.message, state: FSMContext):
+async def goal_chosen(message: types.message, state: FSMContext):
     text = message.text
     user_id = message.from_user.id
     model.customers.update_one({"user_id": user_id}, {"$set": {"goal": text}})
@@ -35,7 +36,7 @@ async def set_up_goal(message: types.message, state: FSMContext):
     await Goal.next()
 
 
-async def set_up_term(message: types.message, state: FSMContext):
+async def term_chosen(message: types.message, state: FSMContext):
     text = message.text
     user_id = message.from_user.id
     model.customers.update_one({"user_id": user_id}, {"$set": {"term": text}})
@@ -53,13 +54,14 @@ async def goal_confirm(message: types.message, state: FSMContext):
 async def set_up_preferences(message: types.message, state: FSMContext):
     await message.answer(dialogue['registration']['done'], reply_markup=mainMenu_kb)
     await state.finish()
+    await MainMenu.main.set()
 
 
 def register_handlers(dp: Dispatcher):
-    dp.register_message_handler(create_goal_button, Text(equals='Создать цель'))
+    dp.register_message_handler(choose_goal, Text(equals='Создать цель'))
     dp.register_message_handler(change_goal, Text(equals='Изменить цель'), state=(Goal.waiting_for_term, Goal.waiting_for_confirm))
     dp.register_message_handler(change_term, Text(equals='Изменить срок'), state=Goal.waiting_for_confirm)
-    dp.register_message_handler(set_up_goal, state=Goal.waiting_for_goal)
-    dp.register_message_handler(set_up_term, state=Goal.waiting_for_term)
+    dp.register_message_handler(goal_chosen, state=Goal.waiting_for_goal)
+    dp.register_message_handler(term_chosen, state=Goal.waiting_for_term)
     dp.register_message_handler(goal_confirm, state=Goal.waiting_for_confirm)
     dp.register_message_handler(set_up_preferences, state=Goal.waiting_for_preferences)
