@@ -1,4 +1,4 @@
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.dispatcher.filters.state import State, StatesGroup, StatesGroupMeta
 
 
 class Goal(StatesGroup):
