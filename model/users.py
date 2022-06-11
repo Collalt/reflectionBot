@@ -1,5 +1,6 @@
 from model import model
 import copy
+from datetime import datetime
 
 users = model.db['users']
 
@@ -36,18 +37,18 @@ def add_user(user_id):
     return users.find_one({"_id": user_id})
 
 
-def edit_user(user_id, goal=None, tasks=None):
+def edit_user(user_id, goal=None, tasks_list=None):
     if user_id is None:
         raise ValueError("user_id is not provided")
 
     user = users.find_one({"_id": user_id})
 
     if user is not None:
-        newData = copy.deepcopy(User)
-        newData["goal"] = goal or user["goal"]
-        newData["tasks_list"] = tasks or user["tasks_list"]
+        new_data = copy.deepcopy(User)
+        new_data["goal"] = goal or user["goal"]
+        new_data["tasks_list"] = tasks_list or user["tasks_list"]
 
-        users.update_one({"_id": user_id}, {"$set": newData})
+        users.update_one({"_id": user_id}, {"$set": new_data})
         return users.find_one({"_id": user_id})
     else:
         raise ValueError("User with provided id not found")
@@ -60,10 +61,24 @@ def edit_user_goal(user_id, goal_text=None, goal_term=None):
     user = users.find_one({"_id": user_id})
 
     if user is not None:
-        newGoalData = { "text": None, "term": None}
-        newGoalData["text"] = goal_text or user["goal"]["text"]
-        newGoalData["term"] = goal_term or user["goal"]["term"]
+        new_goal_data = { "text": None, "term": None, "term_start": datetime.now()}
+        new_goal_data["text"] = goal_text or user["goal"]["text"]
+        new_goal_data["term"] = goal_term or user["goal"]["term"]
 
-        return edit_user(user_id, goal=newGoalData)
+        return edit_user(user_id, goal=new_goal_data)
+    else:
+        raise ValueError("User with provided id not found")
+
+def add_task_user(user_id, task_id):
+    if user_id is None:
+        raise ValueError("user_id is not provided")
+
+    user = users.find_one({"_id": user_id})
+
+    if user is not None:
+        new_task_list = user["tasks_list"].copy()
+        new_task_list.append(task_id)
+
+        return edit_user(user_id, tasks_list=new_task_list)
     else:
         raise ValueError("User with provided id not found")
