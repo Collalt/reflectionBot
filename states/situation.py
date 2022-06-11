@@ -12,9 +12,10 @@ class MainMenu(StatesGroup):
     main = State()
     settings = State()
     change_goal_settings = State()
-    change_goal = State()
+    change_target = State()
     change_term = State()
     help = State()
+
 
 class Task(StatesGroup):
     waiting_for_task = State()
