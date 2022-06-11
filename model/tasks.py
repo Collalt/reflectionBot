@@ -1,10 +1,14 @@
-tasks = db['tasks']
+from model import model
+
+tasks = model.db['tasks']
 
 async def add_task(text = None):
     if text is None:
       raise ValueError("task text is not provided")
 
-    return tasks.insert_one({"text": text})
+    task_id = tasks.insert_one({"text": text})
+
+    return tasks.find_one({"_id": task_id})
 
 async def edit_task(task_id, text = None):
     if task_id is None:
@@ -13,7 +17,9 @@ async def edit_task(task_id, text = None):
     if text is None:
       raise ValueError("task text is not provided")
     
-    return tasks.update_one({"_id": task_id}, {"$set": {"text": text}})
+    tasks.update_one({"_id": task_id}, {"$set": {"text": text}})
+
+    return tasks.find_one({"_id": task_id})
 
 async def get_task(task_id):
     if task_id is None:

@@ -1,45 +1,68 @@
-users = db['users']
+from model import model
+import copy
 
-async def get_user(user_id):
+users = model.db['users']
+
+User = {
+  "goal": {
+    "text": None,
+    "term": None,
+    "term_start": None,
+  },
+  "tasks_list": [],
+  "completed_tasks": [],
+  "session_frequency": [],
+  "time_zone": None,
+  "learned_topics": []
+}
+
+
+def get_user(user_id):
     if user_id is None:
         raise ValueError("user_id is not provided")
         
     return users.find_one({"_id": user_id})
 
 
-async def add_user(user_id):
+def add_user(user_id):
     if user_id is None:
         raise ValueError("user_id is not provided")
 
-    return users.insert_one({"_id": user_id})
+    newUser = copy.deepcopy(User)
+    newUser["_id"] = user_id
+
+    users.insert_one(newUser)
+
+    return users.find_one({"_id": user_id})
 
 
-async def edit_user(user_id, goal=None, tasks=None):
+def edit_user(user_id, goal=None, tasks=None):
     if user_id is None:
         raise ValueError("user_id is not provided")
 
     user = users.find_one({"_id": user_id})
 
     if user is not None:
-        newData = {}
-        newData.goal = goal or user["goal"]
-        newData.tasks = tasks or user["tasks"]
+        newData = copy.deepcopy(User)
+        newData["goal"] = goal or user["goal"]
+        newData["tasks_list"] = tasks or user["tasks_list"]
 
-        return users.update_one({"_id": user_id}, {"$set": newData})
+        users.update_one({"_id": user_id}, {"$set": newData})
+        return users.find_one({"_id": user_id})
     else:
         raise ValueError("User with provided id not found")
 
 
-async def edit_user_goal(user_id, goal_text=None, goal_term=None):
+def edit_user_goal(user_id, goal_text=None, goal_term=None):
     if user_id is None:
         raise ValueError("user_id is not provided")
 
     user = users.find_one({"_id": user_id})
 
     if user is not None:
-        newGoalData = {}
-        newGoalData.text = goal_text or user["goal"]["text"]
-        newGoalData.term = goal_term or user["goal"]["term"]
+        newGoalData = { "text": None, "term": None}
+        newGoalData["text"] = goal_text or user["goal"]["text"]
+        newGoalData["term"] = goal_term or user["goal"]["term"]
 
         return edit_user(user_id, goal=newGoalData)
     else:
