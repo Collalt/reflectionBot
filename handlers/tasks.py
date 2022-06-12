@@ -2,7 +2,7 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from start_bot import dp, dialogue
 from keyboards.mainmenu_keyboard import mainMenu_kb
-from states.situation import MainMenu, Tasks
+from states.state import MainMenu, Tasks
 from model import model
 
 
