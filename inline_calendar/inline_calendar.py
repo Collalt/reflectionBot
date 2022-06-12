@@ -25,8 +25,11 @@ class NotInitedException(Exception):
 class Actions(Enum):
     WRONG_CHOICE = auto()
     PREVIOUS_MONTH = auto()
+    PREVIOUS_YEAR = auto()
     NEXT_MONTH = auto()
+    NEXT_YEAR = auto()
     PICK_DAY = auto()
+    CONTINUE = auto()
 
 
 @dataclass
@@ -45,7 +48,10 @@ class InlineCalendar:
     BASE_CALLBACK = CallbackData(_CALLBACK_DATA_PREFIX, 'action', 'data')
     CALLBACK_WRONG_CHOICE = BASE_CALLBACK.new(action=Actions.WRONG_CHOICE.name, data='-')
     CALLBACK_PREVIOUS_MONTH = BASE_CALLBACK.new(action=Actions.PREVIOUS_MONTH.name, data='-')
+    CALLBACK_PREVIOUS_YEAR = BASE_CALLBACK.new(action=Actions.PREVIOUS_YEAR.name, data='-')
     CALLBACK_NEXT_MONTH = BASE_CALLBACK.new(action=Actions.NEXT_MONTH.name, data='-')
+    CALLBACK_NEXT_YEAR = BASE_CALLBACK.new(action=Actions.NEXT_YEAR.name, data='-')
+    CALLBACK_CONTINUE = BASE_CALLBACK.new(action = Actions.CONTINUE.name, data='-')
     __MAX_DAYS_IN_MONTH = 32
 
     def __init__(self):
@@ -71,12 +77,15 @@ class InlineCalendar:
         user_info = self._get_user_info(chat_id=chat_id)
 
         if user_info.current_date > user_info.min_date:
+            result.append(types.InlineKeyboardButton('<<', callback_data=InlineCalendar.CALLBACK_PREVIOUS_YEAR))
             result.append(types.InlineKeyboardButton('<', callback_data=InlineCalendar.CALLBACK_PREVIOUS_MONTH))
         else:
             result.append(types.InlineKeyboardButton(' ', callback_data=InlineCalendar.CALLBACK_WRONG_CHOICE))
         result.append(types.InlineKeyboardButton(' ', callback_data=InlineCalendar.CALLBACK_WRONG_CHOICE))
         if user_info.current_date < user_info.max_date:
             result.append(types.InlineKeyboardButton('>', callback_data=InlineCalendar.CALLBACK_NEXT_MONTH))
+            result.append(types.InlineKeyboardButton('>>', callback_data=InlineCalendar.CALLBACK_NEXT_YEAR))
+
         else:
             result.append(types.InlineKeyboardButton(' ', callback_data=InlineCalendar.CALLBACK_WRONG_CHOICE))
 
@@ -95,9 +104,19 @@ class InlineCalendar:
         user_data.current_date += relativedelta(months=1)
         self._set_user_info(chat_id, user_data)
 
+    def _inc_year(self, chat_id: int):
+        user_data = self._get_user_info(chat_id)
+        user_data.current_date += relativedelta(months=12)
+        self._set_user_info(chat_id, user_data)
+
     def _dec_month(self, chat_id: int):
         user_data = self._get_user_info(chat_id)
         user_data.current_date -= relativedelta(months=1)
+        self._set_user_info(chat_id, user_data)
+
+    def _dec_year(self, chat_id: int):
+        user_data = self._get_user_info(chat_id)
+        user_data.current_date -= relativedelta(months=12)
         self._set_user_info(chat_id, user_data)
 
     def init(self,
@@ -187,6 +206,8 @@ class InlineCalendar:
             kb.row(*r)
 
         kb.row(*self._create_bottom(chat_id))  # adding buttons for pagination
+        continue_bt = types.InlineKeyboardButton("Продолжить", callback_data=InlineCalendar.CALLBACK_CONTINUE)
+        kb.add(continue_bt)
         return kb
 
     def filter(self, **config) -> CallbackDataFilter:
@@ -215,11 +236,18 @@ class InlineCalendar:
         if callback_data['action'] == Actions.PREVIOUS_MONTH.name and user_info.current_date > user_info.min_date:
             self._dec_month(chat_id)
 
+        if callback_data['action'] == Actions.PREVIOUS_YEAR.name and user_info.current_date > user_info.min_date:
+            self._dec_year(chat_id)
+
         if callback_data['action'] == Actions.NEXT_MONTH.name and user_info.current_date < user_info.max_date:
             self._inc_month(chat_id)
 
+        if callback_data['action'] == Actions.NEXT_YEAR.name and user_info.current_date < user_info.max_date:
+            self._inc_year(chat_id)
+
         if callback_data['action'] == Actions.PICK_DAY.name:
             return user_info.current_date.replace(day=int(callback_data['data']))
+
 
     def close(self):
         raise NotImplementedError
