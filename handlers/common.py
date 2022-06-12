@@ -1,7 +1,7 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from start_bot import bot, dp, dialogue
-from states.situation import Registration
+from states.state import Registration
 from keyboards.registration_keyboard import reg_start_kb
 
 

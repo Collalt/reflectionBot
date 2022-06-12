@@ -1,7 +1,7 @@
 from aiogram import types, Dispatcher
 from start_bot import dialogue
 from aiogram.dispatcher import FSMContext
-from states.situation import Registration, MainMenu
+from states.state import Registration, MainMenu
 from keyboards.mainmenu_keyboard import mainMenu_kb
 from keyboards.registration_keyboard import reg_confirm_kb, reg_session_settings_kb
 from model import users

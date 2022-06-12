@@ -6,7 +6,7 @@ from keyboards.mainmenu_keyboard import mainMenu_kb, mainSettings_kb
 from keyboards.goals_keyboard import configure_goal_kb, change_goal_text_kb
 from keyboards.back_keyboard import back_kb
 from keyboards.tasks_keyboard import tasks_kb
-from states.situation import MainMenu, Tasks
+from states.state import MainMenu, Tasks
 from model import users
 
 
