@@ -12,6 +12,7 @@ mainMenu_kb.row(button1, button2).add(button3)
 button1 = KeyboardButton('Настроить цель')
 button2 = KeyboardButton('Частота сессий')
 button3 = KeyboardButton('Назад')
+button4 = KeyboardButton('Настроить таймзону')
 
 mainSettings_kb = ReplyKeyboardMarkup(resize_keyboard=True)
-mainSettings_kb.row(button1, button2).add(button3)
+mainSettings_kb.row(button1, button2, button4).add(button3)
