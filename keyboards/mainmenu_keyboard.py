@@ -9,7 +9,7 @@ mainMenu_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 mainMenu_kb.row(button1, button2).add(button3)
 
 # Main menu settings
-button1 = KeyboardButton('Изменить цель')
+button1 = KeyboardButton('Настроить цель')
 button2 = KeyboardButton('Частота сессий')
 button3 = KeyboardButton('Назад')
 

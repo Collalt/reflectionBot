@@ -1,11 +1,14 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup, StatesGroupMeta
 
 
-class Goal(StatesGroup):
-    waiting_for_goal = State()
-    waiting_for_term = State()
+class Registration(StatesGroup):
+    create_goal = State()
+    waiting_for_goal_text = State()
+    waiting_for_goal_term = State()
     waiting_for_confirm = State()
     waiting_for_preferences = State()
+    waiting_for_goal_text_change = State()
+    waiting_for_goal_term_change = State()
 
 
 class MainMenu(StatesGroup):

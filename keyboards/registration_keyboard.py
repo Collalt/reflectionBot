@@ -23,14 +23,14 @@ button = KeyboardButton('Создать цель')
 reg_start_kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 reg_start_kb.add(button)
 
-# Change target
+# Registration change goal_text
 
 button = KeyboardButton('Изменить цель')
 
 reg_change_goal_kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 reg_change_goal_kb.add(button)
 
-# Change term
+# Registration change term
 button = KeyboardButton('Изменить срок')
 
 change_term_kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)

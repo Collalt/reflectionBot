@@ -1,6 +1,7 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from start_bot import bot, dp, dialogue
+from states.situation import Registration
 from keyboards.registration_keyboard import reg_start_kb
 
 
@@ -9,6 +10,7 @@ async def start_command_handler(message: types.message, state: FSMContext):
     if current_state is not None:
         await state.finish()
     await message.answer(dialogue['common']['start'], reply_markup=reg_start_kb)
+    await Registration.create_goal.set()
 
 
 async def help_command_handler(message: types.message):
