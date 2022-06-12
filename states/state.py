@@ -9,7 +9,8 @@ class Registration(StatesGroup):
     waiting_for_preferences = State()
     waiting_for_goal_text_change = State()
     waiting_for_goal_term_change = State()
-
+    waiting_for_customize_session = State()
+    waiting_for_timezone = State()
 
 class MainMenu(StatesGroup):
     main = State()
@@ -18,6 +19,8 @@ class MainMenu(StatesGroup):
     change_target = State()
     change_term = State()
     help = State()
+    customize_session = State()
+    customize_timezone = State()
 
 
 class Tasks(StatesGroup):
