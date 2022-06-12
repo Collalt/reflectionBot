@@ -101,3 +101,20 @@ def add_completed_task_user(user_id, task_id):
         return edit_user(user_id, completed_tasks=new_tasks_list)
     else:
         raise ValueError("User with provided id not found")
+
+def delete_task_user(user_id, task_id):
+    if user_id is None:
+        raise ValueError("user_id is not provided")
+
+    user = users.find_one({"_id": user_id})
+
+    if user is not None:
+        new_tasks_list = []
+
+        for id in user["tasks_list"]:
+            if id != task_id:
+                new_tasks_list.append(id)
+
+        return edit_user(user_id, tasks_list=new_tasks_list)
+    else:
+        raise ValueError("User with provided id not found")
