@@ -34,7 +34,6 @@ async def debug_command_handler(message: types.Message):
     await message.answer("DEBUG", reply_markup=reg_week_kb)
 
 
-
 def register_handlers(dp: Dispatcher):
     dp.register_message_handler(start_command_handler, commands=['start'], state='*')
     dp.register_message_handler(help_command_handler, commands=['help'], state='*')

@@ -144,7 +144,7 @@ async def registration_preferences(message: types.message, state: FSMContext):
         user_id = message.from_user.id
         users.edit_user(user_id, session_frequency='Сб')
         await message.answer("Таймзону настрой", reply_markup=types.ReplyKeyboardRemove())
-        Registration.waiting_for_timezone.set()
+        await Registration.waiting_for_timezone.set()
     if message.text == "Каждую неделю":
         user_id = message.from_user.id
         users.edit_user(user_id, session_frequency=week_ru)
