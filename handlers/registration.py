@@ -173,7 +173,14 @@ async def callbacks_session_setup(call: types.CallbackQuery, callback_data: dict
         setup.remove(data)
     else:
         setup.append(data)
-    ans = ' '.join(map(str, setup))
+
+    sorted_frequency = []
+
+    for day in setup:
+        if day in week_ru:
+            sorted_frequency.append()
+
+    ans = ' '.join(map(str, sorted_frequency))
     await call.message.edit_text(text="Ваше сообщение "+ ans, reply_markup=reg_week_kb)
     await call.answer()
 
