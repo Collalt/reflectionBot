@@ -122,3 +122,20 @@ def delete_task_user(user_id, task_id):
         return edit_user(user_id, tasks_list=new_tasks_list)
     else:
         raise ValueError("User with provided id not found")
+
+def add_learned_topic_user(user_id, learned_topic_text = None, learned_topic_status = None):
+    if user_id is None:
+        raise ValueError("user_id is not provided")
+
+    if learned_topic_text is None or learned_topic_status is None:
+        raise ValueError("learned_topic_text or learned_topic_status is not provided")
+
+    user = users.find_one({"_id": user_id})
+
+    if user is not None:
+        new_learned_topics = user["learned_topics"]
+        new_learned_topics.append({"text": learned_topic_text, "status": learned_topic_status})
+
+        return edit_user(user_id, learned_topics=new_learned_topics)
+    else:
+        raise ValueError("User with provided id not found")
