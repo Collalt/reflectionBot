@@ -3,7 +3,7 @@ from start_bot import dialogue, bot, dp
 from aiogram.dispatcher import FSMContext
 from states.state import Registration, MainMenu
 from keyboards.mainmenu_keyboard import mainMenu_kb
-from keyboards.registration_keyboard import reg_confirm_kb, reg_session_settings_kb, reg_choose_term
+from keyboards.registration_keyboard import reg_confirm_kb, reg_session_settings_kb
 from keyboards.sessions_keyboard import reg_week_kb, cb
 from inline_calendar.inline_calendar import InlineCalendar
 from inline_calendar.calendar_settings import week_ru, month_names
@@ -143,12 +143,12 @@ async def registration_preferences(message: types.message, state: FSMContext):
     if message.text == "Каждый день":
         user_id = message.from_user.id
         users.edit_user(user_id, session_frequency='Сб')
-        await message.answer("Таймзону настрой", reply_markup=types.ReplyKeyboardRemove())
+        await message.answer(dialogue["registration"]["timezone"], reply_markup=types.ReplyKeyboardRemove())
         await Registration.waiting_for_timezone.set()
     if message.text == "Каждую неделю":
         user_id = message.from_user.id
         users.edit_user(user_id, session_frequency=week_ru)
-        await message.answer("Таймзону настрой", reply_markup=types.ReplyKeyboardRemove())
+        await message.answer(dialogue["registration"]["timezone"], reply_markup=types.ReplyKeyboardRemove())
         await Registration.waiting_for_timezone.set()
     if message.text == "Своя настройка":
         await message.answer("Опа па па", reply_markup=reg_week_kb)
@@ -178,7 +178,7 @@ async def callbacks_session_setup(call: types.CallbackQuery, callback_data: dict
 
     for day in week_ru:
         if day in setup:
-            sorted_frequency.append()
+            sorted_frequency.append(day)
 
     ans = ' '.join(map(str, sorted_frequency))
     await call.message.edit_text(text="Ваше сообщение "+ ans, reply_markup=reg_week_kb)
@@ -189,7 +189,7 @@ async def callbacks_session_setup(call: types.CallbackQuery, callback_data: dict
 async def callbacks_session_setup_finish(call: types.CallbackQuery, callback_data: dict):
     user_id = call.from_user.id
     users.edit_user(user_id, session_frequency=setup)
-    await call.message.answer("Таймзону настрой", reply_markup=types.ReplyKeyboardRemove())
+    await call.message.answer(dialogue["registration"]["timezone"], reply_markup=types.ReplyKeyboardRemove())
     await Registration.waiting_for_timezone.set()
 
 

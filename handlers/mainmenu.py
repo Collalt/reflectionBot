@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from start_bot import dp, dialogue
 from keyboards.mainmenu_keyboard import mainMenu_kb, mainSettings_kb
-from keyboards.goals_keyboard import configure_goal_kb, change_goal_text_kb
+from keyboards.goals_keyboard import configure_goal_kb
 from keyboards.sessions_keyboard import cb, mainmenu_week_kb
 from keyboards.back_keyboard import back_kb
 from keyboards.tasks_keyboard import tasks_kb
@@ -67,13 +67,12 @@ async def main_settings(message: types.Message, state: FSMContext):
 
         timezone = user["time_zone"]
 
-        await message.answer("Настройте таймзону\n{}".format(timezone), reply_markup=back_kb)
+        await message.answer(dialogue["mainmenu"]["timezone"].format(timezone), reply_markup=back_kb)
         await MainMenu.customize_timezone.set()
 
     if message.text == "Назад":
         await message.answer("Главное меню", reply_markup=mainMenu_kb)
         await MainMenu.main.set()
-
 
 @dp.callback_query_handler(cb.filter(week_day=week_ru), state=MainMenu.customize_session)
 async def callbacks_session_setup(call: types.CallbackQuery, callback_data: dict):
@@ -89,11 +88,23 @@ async def callbacks_session_setup(call: types.CallbackQuery, callback_data: dict
     else:
         frequency.append(data)
 
-    users.edit_user(user_id, session_frequency=frequency)
+    sorted_frequency = []
 
-    ans = ' '.join(map(str, frequency))
+    for day in week_ru:
+        if day in frequency:
+            sorted_frequency.append(day)
+
+    users.edit_user(user_id, session_frequency=sorted_frequency)
+
+    ans = ' '.join(map(str, sorted_frequency))
     await call.message.edit_text(text="Ваше сообщение "+ ans, reply_markup=mainmenu_week_kb)
     await call.answer()
+
+async def customize_session_frequency(message:types.Message, state:FSMContext):
+    if message.text == "Назад":
+        await message.answer(dialogue['mainmenu']['settings'], reply_markup=mainSettings_kb)
+        await MainMenu.settings.set()
+        return
 
 
 async def mainmenu_change_timezone(message: types.Message, state: FSMContext):
@@ -205,4 +216,5 @@ def register_handlers(dp: Dispatcher):
     dp.register_message_handler(change_goal_setting, state=MainMenu.change_goal_settings)
     dp.register_message_handler(main_settings, state=MainMenu.settings)
     dp.register_message_handler(main_menu, state='*')
+    dp.register_message_handler(customize_session_frequency, state=MainMenu.customize_session)
 

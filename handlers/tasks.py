@@ -1,9 +1,8 @@
-from aiogram import types, Dispatcher
+from aiogram import types
 from aiogram.dispatcher import FSMContext
-from start_bot import dp, dialogue
+from start_bot import dp
 from keyboards.mainmenu_keyboard import mainMenu_kb
 from states.state import MainMenu, Tasks
-from model import model
 
 
 async def tasks_main(message: types.Message, state: FSMContext):
